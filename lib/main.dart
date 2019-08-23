@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
 void main() => runApp(JumpApp());
@@ -12,106 +14,96 @@ class JumpApp extends StatelessWidget {
   }
 }
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
+  @override
+  _HomeState createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
+  AnimationController controller;
+  Animation<double> animation;
+
+  Animation<double> heightTween;
+  Animation<double> widthTween;
+  Animation<double> radiusTween;
+  Animation<double> bottomTween;
+
+  double get maxHeight => MediaQuery.of(context).size.height;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 500),
+    );
+    heightTween = new Tween(begin: 800.0, end: 80.0).animate(CurvedAnimation(
+      parent: controller,
+      curve: Curves.linearToEaseOut,
+      reverseCurve: Curves.linearToEaseOut.flipped,
+    ));
+    widthTween = Tween(begin: 500.0, end: 80.0).animate(CurvedAnimation(
+      parent: controller,
+      curve: Curves.linearToEaseOut,
+      reverseCurve: Curves.linearToEaseOut.flipped,
+    ));
+    radiusTween = Tween(begin: 0.0, end: 60.0).animate(CurvedAnimation(
+      parent: controller,
+      curve: Curves.linearToEaseOut,
+      reverseCurve: Curves.linearToEaseOut.flipped,
+    ));
+    bottomTween = Tween(begin: 0.0, end: 30.0).animate(CurvedAnimation(
+      parent: controller,
+      curve: Curves.linearToEaseOut,
+      reverseCurve: Curves.linearToEaseOut.flipped,
+    ));
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.black,
+        onPressed: () {
+          if (heightTween.status == AnimationStatus.completed) {
+            controller.reverse();
+          } else if (heightTween.status == AnimationStatus.dismissed) {
+            controller.forward();
+          }
+        },
+      ),
       body: Stack(
         alignment: Alignment.center,
         children: <Widget>[
-          Container(
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
-            color: Color.fromRGBO(252, 6, 43, 1),
+          AnimatedBuilder(
+            animation: heightTween,
+            builder: (BuildContext context, Widget widget) {
+              return Positioned(
+                height: heightTween.value,
+                width: widthTween.value,
+                bottom: bottomTween.value,
+                child: Container(
+                  decoration: BoxDecoration(
+                      color: Color.fromRGBO(252, 1, 7, 1),
+                      borderRadius: BorderRadius.circular(radiusTween.value),
+                      boxShadow: [
+                        BoxShadow(
+                            color: Colors.black.withAlpha(70),
+                            offset: const Offset(3.0, 10.0),
+                            blurRadius: 15.0)
+                      ]),
+                ),
+              );
+            },
           )
         ],
       ),
     );
   }
 }
-
-
-// class MyHomePage extends StatefulWidget {
-//   MyHomePage({Key key, this.title}) : super(key: key);
-
-//   // This widget is the home page of your application. It is stateful, meaning
-//   // that it has a State object (defined below) that contains fields that affect
-//   // how it looks.
-
-//   // This class is the configuration for the state. It holds the values (in this
-//   // case the title) provided by the parent (in this case the App widget) and
-//   // used by the build method of the State. Fields in a Widget subclass are
-//   // always marked "final".
-
-//   final String title;
-
-//   @override
-//   _MyHomePageState createState() => _MyHomePageState();
-// }
-
-// class _MyHomePageState extends State<MyHomePage> {
-//   int _counter = 0;
-
-//   void _incrementCounter() {
-//     setState(() {
-//       // This call to setState tells the Flutter framework that something has
-//       // changed in this State, which causes it to rerun the build method below
-//       // so that the display can reflect the updated values. If we changed
-//       // _counter without calling setState(), then the build method would not be
-//       // called again, and so nothing would appear to happen.
-//       _counter++;
-//     });
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     // This method is rerun every time setState is called, for instance as done
-//     // by the _incrementCounter method above.
-//     //
-//     // The Flutter framework has been optimized to make rerunning build methods
-//     // fast, so that you can just rebuild anything that needs updating rather
-//     // than having to individually change instances of widgets.
-//     return Scaffold(
-//       appBar: AppBar(
-//         // Here we take the value from the MyHomePage object that was created by
-//         // the App.build method, and use it to set our appbar title.
-//         title: Text(widget.title),
-//       ),
-//       body: Center(
-//         // Center is a layout widget. It takes a single child and positions it
-//         // in the middle of the parent.
-//         child: Column(
-//           // Column is also a layout widget. It takes a list of children and
-//           // arranges them vertically. By default, it sizes itself to fit its
-//           // children horizontally, and tries to be as tall as its parent.
-//           //
-//           // Invoke "debug painting" (press "p" in the console, choose the
-//           // "Toggle Debug Paint" action from the Flutter Inspector in Android
-//           // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-//           // to see the wireframe for each widget.
-//           //
-//           // Column has various properties to control how it sizes itself and
-//           // how it positions its children. Here we use mainAxisAlignment to
-//           // center the children vertically; the main axis here is the vertical
-//           // axis because Columns are vertical (the cross axis would be
-//           // horizontal).
-//           mainAxisAlignment: MainAxisAlignment.center,
-//           children: <Widget>[
-//             Text(
-//               'You have pushed the button this many times:',
-//             ),
-//             Text(
-//               '$_counter',
-//               style: Theme.of(context).textTheme.display1,
-//             ),
-//           ],
-//         ),
-//       ),
-//       floatingActionButton: FloatingActionButton(
-//         onPressed: _incrementCounter,
-//         tooltip: 'Increment',
-//         child: Icon(Icons.add),
-//       ), // This trailing comma makes auto-formatting nicer for build methods.
-//     );
-//   }
-// }
