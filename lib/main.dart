@@ -1,6 +1,9 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+
+import 'mapStyle.dart';
 
 void main() => runApp(JumpApp());
 
@@ -22,6 +25,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   AnimationController controller;
   Animation<double> animation;
+  GoogleMapController mapController;
 
   Animation<double> heightTween;
   Animation<double> widthTween;
@@ -100,6 +104,13 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                       ]),
                 ),
               );
+            },
+          ),
+          GoogleMap(
+            initialCameraPosition: CameraPosition(target:LatLng(19.2215,72.8390)),
+            onMapCreated: (mapController) {
+            mapController = mapController;
+            mapController.setMapStyle(mapStyle);
             },
           )
         ],
